@@ -3,7 +3,7 @@ package web
 templ HelloForm() {
 	@Base() {
 		<form hx-post="/hello" method="POST" hx-target="#hello-container">
-			<input id="name" name="name" type="text"/>
+			<input id="endpoint" name="endpoint" type="url" required />
 			<button type="submit">Submit</button>
 		</form>
 		<div id="hello-container"></div>
@@ -11,5 +11,13 @@ templ HelloForm() {
 }
 
 templ HelloPost(name string) {
-	<div>Hello, { name }</div>
+	<div>
+    <p>Hello { name }</p>
+  </div>
+}
+
+templ HealthPost (health Health) {
+  <div>
+    <p>Server: { health.Server }</p>
+  </div>
 }
