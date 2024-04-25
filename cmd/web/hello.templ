@@ -1,5 +1,9 @@
 package web
 
+import (
+    "fmt"
+)
+
 templ HelloForm() {
 	@Base() {
 		<form hx-post="/hello" method="POST" hx-target="#hello-container">
@@ -16,8 +20,10 @@ templ HelloPost(name string) {
   </div>
 }
 
-templ HealthPost (health Health) {
+templ HealthPost (health map[string]interface{}) {
   <div>
-    <p>Server: { health.Server }</p>
+    for key, value := range health {
+      <p>{ fmt.Sprintf("%s", key) }: { fmt.Sprintf("%s", value) }</p>
+    }
   </div>
 }

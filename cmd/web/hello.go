@@ -30,13 +30,13 @@ func HelloWebHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Error readAll: %e", err)
 	}
 
-	var h Health
-	err = json.Unmarshal(body, &h)
+	var res map[string]interface{}
+	err = json.Unmarshal(body, &res)
 	if err != nil {
 		log.Fatalf("Error failed unmarshal: %e", err)
 	}
 
-	component := HealthPost(h)
+	component := HealthPost(res)
 	err = component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
