@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,6 +11,10 @@ import (
 type Health struct {
 	Server string `json:"server"`
 }
+
+var (
+	TEN_MEGABYTES_MAX_SIZE_UPLOAD = 10 << 20
+)
 
 func HelloWebHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -41,5 +46,37 @@ func HelloWebHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Fatalf("Error rendering in HelloWebHandler: %e", err)
+	}
+}
+
+func EndpointUploadWebHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(int64(TEN_MEGABYTES_MAX_SIZE_UPLOAD))
+
+	file, header, err := r.FormFile("endpoints")
+	if err != nil {
+		log.Fatalf("Error parsing file: %e", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+	defer file.Close()
+
+	jsonFile, err := header.Open()
+	if err != nil {
+		log.Fatalf("Failed to open the uploaded file: %e", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	content, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		log.Fatalf("Failed to read the uploaded file: %e", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	fmt.Print(string(content))
+
+	component := InitialResultPost()
+	err = component.Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Fatalf("Error rendering in EndpointUploadWebHandler: %e", err)
 	}
 }

@@ -6,11 +6,24 @@ import (
 
 templ HelloForm() {
 	@Base() {
-		<form hx-post="/hello" method="POST" hx-target="#hello-container">
-			<input id="endpoint" name="endpoint" type="url" required />
-			<button type="submit">Submit</button>
-		</form>
+    <div style="display: flex; gap: 1rem;">
+      <form hx-post="/hello" method="POST" hx-target="#hello-container">
+        <input id="endpoint" name="endpoint" type="url" required />
+        <button type="submit">Submit</button>
+      </form>
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        hx-post="/endpoints/upload"
+        hx-target="#result"
+      >
+        <input id="endpoints" name="endpoints" type="file" />
+        <button type="submit">Upload</button>
+      </form>
+    </div>
+
 		<div id="hello-container"></div>
+		<div id="result"></div>
 	}
 }
 
@@ -25,5 +38,11 @@ templ HealthPost (health map[string]interface{}) {
     for key, value := range health {
       <p>{ fmt.Sprintf("%s", key) }: { fmt.Sprintf("%s", value) }</p>
     }
+  </div>
+}
+
+templ InitialResultPost() {
+  <div>
+    <p>Uploaded!</p>
   </div>
 }

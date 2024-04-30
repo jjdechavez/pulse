@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/a-h/templ"
 	"pulse/cmd/web"
+
+	"github.com/a-h/templ"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -21,6 +22,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("/assets/", fileServer)
 	mux.Handle("/web", templ.Handler(web.HelloForm()))
 	mux.HandleFunc("/hello", web.HelloWebHandler)
+	mux.HandleFunc("/endpoints/upload", web.EndpointUploadWebHandler)
 
 	return mux
 }
