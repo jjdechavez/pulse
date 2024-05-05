@@ -41,8 +41,10 @@ templ HealthPost (health map[string]interface{}) {
   </div>
 }
 
-templ InitialResultPost() {
+templ InitialResultPost(endpoints []EndpointFile) {
   <div>
-    <p>Uploaded!</p>
+    for _, value := range endpoints {
+      <p>Endpoint: { fmt.Sprintf("%s", value.Endpoint) }</p>
+    }
   </div>
 }

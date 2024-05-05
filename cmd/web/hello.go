@@ -38,6 +38,7 @@ func HelloWebHandler(w http.ResponseWriter, r *http.Request) {
 	var res map[string]interface{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Fatalf("Error failed unmarshal: %e", err)
 	}
 
@@ -47,6 +48,10 @@ func HelloWebHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Fatalf("Error rendering in HelloWebHandler: %e", err)
 	}
+}
+
+type EndpointFile struct {
+	Endpoint string
 }
 
 func EndpointUploadWebHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +78,21 @@ func EndpointUploadWebHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Print(string(content))
 
-	component := InitialResultPost()
+	var listOfEndpoints []EndpointFile
+	errU := json.Unmarshal(content, &listOfEndpoints)
+	if errU != nil {
+		log.Fatalf("Failed to json econde the uploaded file content: %e", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	fmt.Printf("All listOfEndpoints: %+v", listOfEndpoints)
+	// fmt.Printf("total count of listOfEndpoints: %d", len(listOfEndpoints))
+
+	for _, value := range listOfEndpoints {
+		fmt.Printf("each endpoint: %+v", value.Endpoint)
+	}
+
+	component := InitialResultPost(listOfEndpoints)
 	err = component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
