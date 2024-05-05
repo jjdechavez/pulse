@@ -86,11 +86,32 @@ func EndpointUploadWebHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("All listOfEndpoints: %+v", listOfEndpoints)
-	// fmt.Printf("total count of listOfEndpoints: %d", len(listOfEndpoints))
 
-	for _, value := range listOfEndpoints {
+	var listOfResult = make([]map[string]interface{}, len(listOfEndpoints))
+
+	for index, value := range listOfEndpoints {
 		fmt.Printf("each endpoint: %+v", value.Endpoint)
+		feedback, err := http.Get(value.Endpoint)
+		if err != nil {
+			log.Fatalf("Failed to fetch %v endpoint: %e", value.Endpoint, err)
+		}
+
+		body, err := ioutil.ReadAll(feedback.Body)
+		if err != nil {
+			log.Fatalf("Error readAll: %e", err)
+		}
+
+		var decodedResult map[string]interface{}
+		err = json.Unmarshal(body, &decodedResult)
+		if err != nil {
+			log.Fatalf("Error failed unmarshal: %e", err)
+			continue
+		}
+
+		listOfResult[index] = decodedResult
 	}
+
+	fmt.Print("decodedResults: %+v", listOfResult)
 
 	component := InitialResultPost(listOfEndpoints)
 	err = component.Render(r.Context(), w)
